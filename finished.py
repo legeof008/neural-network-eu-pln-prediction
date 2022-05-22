@@ -12,7 +12,7 @@ checked_currency = 'EUR'
 against_currency = 'PLN'
 
 start = dt.datetime(2016,1,1)
-end = dt.datetime.now()
+end = dt.datetime(2020,2,2)
 
 data = web.DataReader(f'{checked_currency}{against_currency}=X', 'yahoo', start, end)
 
@@ -26,18 +26,26 @@ scaled_data_3 = scaler.fit_transform(data['Adj Close'].values.reshape(-1,1))
 
 predicion_days = 60
 
-x_train, y_train = [],[]
+x_train, y_train ,x_val, y_val = [],[],[],[]
 
 for x in range(predicion_days,len(scaled_data_0)):
-    x_train.append([scaled_data_0[x-predicion_days:x,0],scaled_data_1[x-predicion_days:x,0],scaled_data_2[x-predicion_days:x,0],scaled_data_3[x-predicion_days:x,0]])
-    y_train.append(scaled_data_0[x,0])
+    if x % 4 != 0 :
+        x_train.append([scaled_data_0[x-predicion_days:x,0],scaled_data_1[x-predicion_days:x,0],scaled_data_2[x-predicion_days:x,0],scaled_data_3[x-predicion_days:x,0]])
+        y_train.append(scaled_data_0[x,0])
+    else :
+        x_val.append([scaled_data_0[x-predicion_days:x,0],scaled_data_1[x-predicion_days:x,0],scaled_data_2[x-predicion_days:x,0],scaled_data_3[x-predicion_days:x,0]])
+        y_val.append(scaled_data_0[x,0])
 
-x_train, y_train = np.array(x_train), np.array(y_train)
+x_train, y_train, x_val, y_val = np.array(x_train), np.array(y_train), np.array(x_val), np.array(y_val)
 x_train = np.reshape(x_train, (x_train.shape[0],x_train.shape[2],x_train.shape[1]))
-
-print(x_train.shape)
+x_val = np.reshape(x_val,(x_val.shape[0],x_val.shape[2],x_val.shape[1]))
+print(len(x_train))
+print(len(x_val))
 # Model sieci neuronowej
 
+# Model sieci neuronowej
+
+# Model 1
 model = Sequential()
 
 model.add(LSTM(units=50,return_sequences=True,input_shape=(x_train.shape[1],x_train.shape[2])))
@@ -48,8 +56,30 @@ model.add(LSTM(units=50))
 model.add(Dropout(0.2))
 model.add(Dense(units=1)) # Przewidzenie następnego dnia
 
-model.compile(optimizer='adam',loss='mean_squared_error')
-model.fit(x_train,y_train,epochs=25,batch_size=32)
+# Model 2
+#model = Sequential()
+#
+#model.add(LSTM(units=30,return_sequences=True,input_shape=(x_train.shape[1],x_train.shape[2])))
+#model.add(Dropout(0.2))
+#model.add(LSTM(units=30,return_sequences=True))
+#model.add(Dropout(0.2))
+#model.add(LSTM(units=30))
+#model.add(Dropout(0.2))
+#model.add(Dense(units=1)) # Przewidzenie następnego dnia
+
+# Model 3
+#model = Sequential()
+#
+#model.add(LSTM(units=20,return_sequences=True,input_shape=(x_train.shape[1],x_train.shape[2])))
+#model.add(Dropout(0.2))
+#model.add(LSTM(units=20,return_sequences=True))
+#model.add(Dropout(0.2))
+#model.add(LSTM(units=20))
+#model.add(Dropout(0.2))
+#model.add(Dense(units=1)) # Przewidzenie następnego dnia
+
+model.compile(optimizer='adam',loss='mean_squared_error',metrics=['accuracy'])
+history = model.fit(x_train,y_train,epochs=25,batch_size=32,validation_data=(x_val,y_val))
 
 # Testowanie modelu
 
@@ -81,12 +111,13 @@ model_inputs_3 = model_inputs_3.reshape(-1,1)
 model_inputs_3 = scaler.fit_transform(model_inputs_3)
 
 x_test =[]
+y_test =[]
 
 for x in range(predicion_days,len(model_inputs_0)):
     x_test.append([model_inputs_0[x-predicion_days:x,0],model_inputs_1[x-predicion_days:x,0],model_inputs_2[x-predicion_days:x,0],model_inputs_3[x-predicion_days:x,0]])
+    y_test.append(model_inputs_0[x,0])
 
-
-x_test = np.array(x_test)
+x_test, y_test = np.array(x_test) , np.array(y_test)
 x_test = np.reshape(x_test, (x_test.shape[0],x_test.shape[2],x_test.shape[1]))
 
 prediction_prices = model.predict(x_test)
@@ -100,6 +131,49 @@ plt.ylabel('Price')
 plt.legend(loc='upper left')
 plt.show()
 
+errs = []
+naiv_err =[]
+for x in range(0,len(actual_prices)):
+    errs.append(abs(actual_prices[x] - prediction_prices[x][0]))
+    if x+1 < len(actual_prices):
+        naiv_err.append(abs(prediction_prices[x][0]-actual_prices[x+1]))
+
+plt.boxplot(errs)
+plt.boxplot(naiv_err)
+plt.title('Absolute error of method')
+plt.xlabel('Prediction number')
+plt.ylabel('Error')
+plt.legend(loc='upper left')
+plt.show()
+
+
+_, acc = model.evaluate(x_test, y_test)
+print("Accuracy = ", (acc * 100.0), "%")
+
+loss = history.history['loss']
+val_loss = history.history['val_loss']
+epochs = range(1, len(loss) + 1)
+plt.plot(epochs, loss, 'y', label='Training loss')
+plt.plot(epochs, val_loss, 'r', label='Validation loss')
+plt.title('Training and validation loss')
+plt.xlabel('Epochs')
+plt.ylabel('Loss')
+plt.legend()
+plt.show()
+
+acc = history.history['accuracy']
+val_acc = history.history['val_accuracy']
+plt.plot(epochs, acc, 'y', label='Training acc')
+plt.plot(epochs, val_acc, 'r', label='Validation acc')
+plt.title('Training and validation accuracy')
+plt.xlabel('Epochs')
+plt.ylabel('Accuracy')
+plt.legend()
+plt.show()
+
+print(len(x_train))
+print(len(x_val))
+print(len(x_test))
 # Rzeczywiste przewidywania
 #
 #real_data = [model_inputs[len(model_inputs) - predicion_days:len(model_inputs) ,0]]
