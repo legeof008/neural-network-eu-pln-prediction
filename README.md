@@ -11,6 +11,7 @@ Currency exchange rate is an important analytical factor of estimating economic 
 An analysis of any value exchange comes down to two kinds of analysis :
 - technical analysis,
 - fundamental analysis.
+
 The latter is about complete breakdown of certain ideas and looking deep within the clockwork of observed exchange rate. For stock exchange it might be for example an invastigation into the inner workings of a company etc. The former is a pure mathematical, methodical breakdown of the problem. That's the project's goal.
 
 ## Used frameworks
