@@ -19,14 +19,14 @@ TensorFlow - an open source framework with a stable API.
 ## Network Model
 I decided to use two examplary models for this project.
 Classic MLP with BP learning:
-```
+```python
 model = Sequential()
 model.add(Dense(units=3,activation='relu',input_shape=(x_train.shape[1],)))
 model.add(Dense(units=3))
 model.add(Dense(units=1))
 ```
 LSTM model with dropout:
-```
+```python
 model.add(LSTM(units=3,return_sequences=True,activation='relu',input_shape=(x_train.shape[1],1)))
 model.add(Dropout(0.2))
 model.add(LSTM(units=2,return_sequences=True))
