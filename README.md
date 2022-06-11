@@ -1,6 +1,9 @@
+
 # Neural networks currency prediction
 
 This project aims to create a tool for easier technical analisys of stock related markets.
+
+
 
 ## Introduction to the problem
 Currency exchange rate is an important analytical factor of estimating economic growth. As any other value exchange it is often a subject of speculation and for this reason keeping good information about certain currency values and where they're headed can be profitable.
@@ -16,14 +19,14 @@ TensorFlow - an open source framework with a stable API.
 ## Network Model
 I decided to use two examplary models for this project.
 Classic MLP with BP learning:
-```python
+```
 model = Sequential()
 model.add(Dense(units=3,activation='relu',input_shape=(x_train.shape[1],)))
 model.add(Dense(units=3))
 model.add(Dense(units=1))
 ```
 LSTM model with dropout:
-```python
+```
 model.add(LSTM(units=3,return_sequences=True,activation='relu',input_shape=(x_train.shape[1],1)))
 model.add(Dropout(0.2))
 model.add(LSTM(units=2,return_sequences=True))
@@ -32,6 +35,7 @@ model.add(LSTM(units=2))
 model.add(Dropout(0.2))
 model.add(Dense(units=1))
 ```
+![alt text](plots/zdj3.svg?raw=true)
 
 ## The input
 The analysied exchange rate was **X=EUR/PLN**. The input is 3 chronological days, then the network produces the 4th day's price.
