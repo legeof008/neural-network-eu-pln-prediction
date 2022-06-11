@@ -68,3 +68,12 @@ LSTM:
 | naive method | 1.471203886470826  | 1.471203886470826  |
 
 ![alt text](plots/lstm.svg?raw=true)
+
+In summary I believe this kind of tool could be useful if paired with a fundamental analysis.
+Though in some places the prediction seems to be changing trend too late which in real world could lead to selling or buying too late or too early, before the value peaks/hits bottom.
+## Sources
+https://www.tensorflow.org/api_docs  
+https://www.researchgate.net/publication/\\335055073\_A\_Generative\_Neural\\\_Network\_Model\_for\_the\_Quality\_Prediction\_of\_Work\_in\_Progress\_Products  
+https://arxiv.org/pdf/1502.06434.pdf  
+https://www.heatonresearch.com/2017/06/01/hidden-layers.html  
+https://expressanalytics.com/blog/neural-networks-prediction/
