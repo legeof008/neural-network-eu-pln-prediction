@@ -39,4 +39,32 @@ model.add(Dense(units=1))
 
 ## The input
 The analysied exchange rate was **X=EUR/PLN**. The input is 3 chronological days, then the network produces the 4th day's price.
- 
+
+
+I will also use a variation of two kinds of inputs - 1 variable an 4 variable as shown below.
+![alt text](plots/multivar2.svg?raw=true)
+## The summary
+As a naive method I "predicted" that the next day's price will be the same as the day before.
+The LSTM network models seemed much more stable than the MLP ones.
+In any other aspect though MLP prevails, it is faster to teach, takes less input and is less complicated and most importantly - it's more accurate.
+The mean absolute errors of each solution are shown below.
+
+MLP:
+| Model        | 4 variables        | 1 variable         |
+|--------------|--------------------|--------------------|
+| 1            | 1.5430339340284637 | 1.4703023297557245 |
+| 2            | 1.4492799562886722 | 1.4633906801606469 |
+| 3            | 1.463395628647026  | 0.958279956288672  |
+| naive method | 1.471203886470826  | 1.471203886470826  |
+
+![alt text](plots/mlp_final.svg?raw=true)
+
+LSTM:
+| Model        | 4 variables        | 1 variable         |
+|--------------|--------------------|--------------------|
+| 1            | 1.5430339340284637 | 1.4703023297557245 |
+| 2            | 1.4492799562886722 | 1.4633906801606469 |
+| 3            | 1.463395628647026  | 0.958279956288672  |
+| naive method | 1.471203886470826  | 1.471203886470826  |
+
+![alt text](plots/lstm.svg?raw=true)
